@@ -24,7 +24,36 @@ class Page3 extends Component {
             backgroundColor: '#51c0c3'
         }
     };
-    send(){
+
+    send1(responseData){
+        this.setState({progressVisible:true});
+        AsyncStorage.getItem('token').then((token) => {
+            fetch(env.BASE_URL + "rest/simple_confirm/addOrder", {
+                method: 'POST',
+                headers: {
+                    Authorization: 'Bearer ' + JSON.parse(token).access_token,
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(responseData)
+            }).then((responseData2) =>{
+                this.setState({progressVisible:false});
+                console.log('responseData2',responseData2);
+                console.log('responseData1',responseData);
+                this.setState({progressVisible:false});
+                if(responseData2.status==200){
+                    this.props.navigation.navigate('Success',responseData);
+                }else{
+                     return (<View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
+                        <Text style={{ padding: 5,width:'100%', fontSize: 14 }}>Please Try Again</Text>
+                    </View>);
+                }
+            });
+        });
+    }
+
+    /*send(){
+        this.setState({progressVisible:true});
         var site=env.BASE_URL + "rest/confirm/confirm";
         console.log('send button clicked',env.BASE_URL + "rest/simple_confirm/confirm");
         AsyncStorage.getItem('token').then((token) => {
@@ -47,6 +76,7 @@ class Page3 extends Component {
                             },
                             body: JSON.stringify(responseData1)
                         }).then((responseData2) =>{
+                            this.setState({progressVisible:false});
                             console.log('responseData2',responseData2);
                             console.log('responseData1',responseData1);
                             if(responseData2.status==200){
@@ -63,7 +93,8 @@ class Page3 extends Component {
                 }
             });
         });
-    }
+    }*/
+
     getAddress() {
         AsyncStorage.getItem('token').then((token) => {
             fetch(env.BASE_URL + "rest/simple_confirm/confirm", {
@@ -73,10 +104,10 @@ class Page3 extends Component {
                 }
             }).then((response) => response.json())
                 .then((responseData) => {
-                    console.log(responseData);
+                    console.log('getAddress ',responseData);
                     if (responseData.success == 1) {
                         console.log('responseData.data.products=',responseData.data.products);
-                        this.setState({btn: <Button onPress={() => this.send()} raised title='Continue' style={{ width: '100%' }} backgroundColor="#51c0c3" />});
+                        this.setState({btn: <Button onPress={() => this.send1(responseData)} raised title='Continue' style={{ width: '100%' }} backgroundColor="#51c0c3" />});
                         this.setState({orderNo:<Text style={{ fontSize: 18, padding: 5, fontWeight: 'bold' }}>Order No:#{responseData.data.order_id} </Text>});
                         var data = responseData.data.products.map(data => {
                             console.log(data);
