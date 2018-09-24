@@ -66,6 +66,7 @@ class Page3 extends Component {
     })
     console.log(value.code);
     this.setState({ progressVisible: true });
+    this.setState({ selectedOption: value });
 
     AsyncStorage.getItem('token').then((token) => {
       console.log('url-> ',env.BASE_URL + "rest/payment_method/payments");
@@ -92,6 +93,7 @@ class Page3 extends Component {
   }
 
   render() {
+    console.log(this.state.selectedOption);
     return (
       <ScrollView>
         <View style={styles.container}>
@@ -110,7 +112,7 @@ class Page3 extends Component {
             {/* <Text style={{ padding: 5, fontSize: 14 }}>Default Address</Text> */}
             {this.state.payment}
           </View>
-          <Button onPress={()=>this.props.navigation.navigate('ConfirmPayment')} raised title='Continue' style={{ width: '100%' }} backgroundColor="#51c0c3" />
+          <Button onPress={()=>this.props.navigation.navigate('ConfirmPayment',this.state.selectedOption)} raised title='Continue' style={{ width: '100%' }} backgroundColor="#51c0c3" />
         </View>
       </ScrollView>
     );

@@ -26,30 +26,44 @@ class Page3 extends Component {
     };
 
     send1(responseData){
-        this.setState({progressVisible:true});
-        AsyncStorage.getItem('token').then((token) => {
-            fetch(env.BASE_URL + "rest/simple_confirm/addOrder", {
-                method: 'POST',
-                headers: {
-                    Authorization: 'Bearer ' + JSON.parse(token).access_token,
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(responseData)
-            }).then((responseData2) =>{
-                this.setState({progressVisible:false});
-                console.log('responseData2',responseData2);
-                console.log('responseData1',responseData);
-                this.setState({progressVisible:false});
-                if(responseData2.status==200){
-                    this.props.navigation.navigate('Success',responseData);
-                }else{
-                     return (<View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
-                        <Text style={{ padding: 5,width:'100%', fontSize: 14 }}>Please Try Again</Text>
-                    </View>);
-                }
+        if(this.props.navigation.state.params.code=='g2apay'){
+            console.log('g2apay entered');
+            console.log(responseData.data.payment);
+            AsyncStorage.getItem('token').then((token) => {
+                fetch(env.BASE_URL + "rest/simple_confirm/checkoutforapp", {
+                    method: 'POST',
+                    headers: {
+                        Authorization: 'Bearer ' + JSON.parse(token).access_token,
+                    },
+                }).then((responseData1) =>{
+                    console.log(responseData1);
+                });
             });
-        });
+            // this.props.navigation.navigate('confirmWeb', {data:responseData.data.payment});
+
+        }else{
+            this.setState({progressVisible:true});
+            AsyncStorage.getItem('token').then((token) => {
+                fetch(env.BASE_URL + "rest/simple_confirm/addOrder", {
+                    method: 'POST',
+                    headers: {
+                        Authorization: 'Bearer ' + JSON.parse(token).access_token,
+                    },
+                }).then((responseData2) =>{
+                    this.setState({progressVisible:false});
+                    console.log('responseData2',responseData2);
+                    console.log('responseData1',responseData);
+                    this.setState({progressVisible:false});
+                    if(responseData2.status==200){
+                        this.props.navigation.navigate('Success',responseData);
+                    }else{
+                         return (<View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
+                            <Text style={{ padding: 5,width:'100%', fontSize: 14 }}>Please Try Again</Text>
+                        </View>);
+                    }
+                });
+            });
+        }
     }
 
     /*send(){
@@ -96,6 +110,7 @@ class Page3 extends Component {
     }*/
 
     getAddress() {
+        console.log('params ',this.props.navigation.state.params.code);
         AsyncStorage.getItem('token').then((token) => {
             fetch(env.BASE_URL + "rest/simple_confirm/confirm", {
                 method: 'POST',
