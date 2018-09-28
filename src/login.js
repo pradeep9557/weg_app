@@ -9,9 +9,9 @@ import { ListItem, SearchBar, Header,CheckBox, Button, FormLabel, FormInput, For
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import env from './components/env';
 import { ProgressDialog,Dialog } from 'react-native-simple-dialogs';
-
 import { GoogleSignin, GoogleSigninButton, statusCodes } from 'react-native-google-signin';
-
+// var { FBLogin, FBLoginManager } = require('react-native-facebook-login');
+import { LoginManager, AccessToken } from 'react-native-fbsdk';
 
 export default class ListViewExample extends PureComponent<{}, State> {
   constructor(props){
@@ -43,6 +43,83 @@ export default class ListViewExample extends PureComponent<{}, State> {
     });
   }
 
+   _fbAuth(){    
+        LoginManager.logInWithReadPermissions(['public_profile','email']).then((result)=>{
+          if(result.isCancelled){
+            console.log('Login was Cancelled');
+            alert("canceled by user");
+          }
+          else{ 
+            AccessToken.getCurrentAccessToken().then((data) => {
+              const { accessToken } = data
+              this.initUser(accessToken)
+            });
+            this.props.navigation.navigate("sendRecive");
+          }
+        },function(error){
+          console.log('An error occured:' + error);
+         
+        });
+       
+      }
+
+  initUser(token) {
+        this.setState({progressVisible:true});
+        fetch('https://graph.facebook.com/v2.5/me?fields=email,name,friends,picture&access_token=' + token)
+        .then((response) =>{return response.json()})
+        .then((json) => {
+          json.photo=json.picture.data.url;
+          let params = {email: json.email, image: json.picture.data.url, name: json.name,role:'user',status:'activated',provider:'facebook'}
+          console.log("this.props", this.props);
+          console.log('this.params',params);
+          AsyncStorage.getItem('token').then((token) => {
+            fetch(env.BASE_URL+"rest/login/socialloginforapp", {
+              method:'POST',
+              headers:{
+                Authorization: 'Bearer ' + JSON.parse(token).access_token,
+                Accept  : 'application/json',
+                'Content-Type' : 'application/json'
+              },
+              body:JSON.stringify(params)
+            }).then((response) => response.json())
+            .then((responseData) => {
+              console.log(responseData);
+              this.setState({progressVisible:false});
+              console.log(responseData);
+              if(responseData.success == 1)
+              {
+                AsyncStorage.setItem('user', JSON.stringify({ name: responseData.data.firstname }));
+                AsyncStorage.setItem('user_detail', JSON.stringify(responseData.data));
+                this.props.navigation.navigate('ScreenOne');
+              }else if(responseData.error[0] == "User is logged."){
+                this.props.navigation.navigate('ScreenOne');
+              }else{
+                ToastAndroid.show(responseData.error[0], ToastAndroid.SHORT);
+              }
+              
+            }).catch(e=>console.log(e))
+          }).catch(e=>console.log(e));
+          /*reaquestData('user/socialAuthenticate',params,'PUT').then((response)=>{
+            console.log('response',response);
+            if(response.status=="success"){
+              this.props.login_success(response.data);
+              AsyncStorage.setItem('yearly_bonus',response.data.yearly_bonus);
+              //this.props.navigation.navigate("sendRecive");
+            }else if(response.status=="failed"){
+              alert(response.message);
+            }else{
+              console.log(response);
+            }         
+          }).catch(error=>{
+            console.log(error);
+          });*/
+          
+        })
+        .catch(() => {
+          console.log('ERROR GETTING DATA FROM FACEBOOK')
+        })
+      }
+
   googleAuth() {
     
     GoogleSignin.signIn().then((user) => { alert(JSON.stringify(user));
@@ -58,6 +135,7 @@ export default class ListViewExample extends PureComponent<{}, State> {
 
   render() {
     const { navigate } = this.props.navigation
+    var _this = this;
     return (
       <View style={styles.container}>
       <ScrollView>
@@ -108,21 +186,19 @@ export default class ListViewExample extends PureComponent<{}, State> {
           </View>
         </Dialog>
         <View style={{marginTop:30,alignItems:'center'}}>
+        <TouchableOpacity onPress={ ()=>this._fbAuth()}>
+            <Text>Facebook</Text>
+        </TouchableOpacity>
           <TouchableOpacity onPress={()=>this.setState({ ForgotPassword: true })}>
             <Text style={{fontWeight:'bold',padding:5}}>Forgot Password <Text style={{color:'#51c0c3'}}>Click here</Text></Text>
-            
           </TouchableOpacity>
+
         </View>
-        <GoogleSigninButton
-          style={{ width: 48, height: 48 }}
-          size={GoogleSigninButton.Size.Icon}
-          color={GoogleSigninButton.Color.Dark}
-          onPress={(e)=>{this.googleAuth();}}
-        />
         </ScrollView>
       </View>
     );
   }
+
   submit(){
       this.setState({progressVisible:true});
       AsyncStorage.getItem('token').then((token) => {

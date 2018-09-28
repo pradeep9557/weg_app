@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">weguarentee</string>
-    <string name="facebook_app_id">2011314142246081</string>
+    <string name="facebook_app_id">327539304475157</string>
+	<string name="fb_login_protocol_scheme">fb327539304475157</string>
 </resources>

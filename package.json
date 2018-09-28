@@ -12,6 +12,7 @@
     "react-native": "0.55.4",
     "react-native-checkbox-group": "^1.0.3",
     "react-native-elements": "^0.19.1",
+    "react-native-fbsdk": "^0.8.0",
     "react-native-fcm": "^11.3.1",
     "react-native-flexi-radio-button": "^0.2.2",
     "react-native-fontawesome": "^5.7.0",

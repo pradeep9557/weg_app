@@ -86,6 +86,7 @@ export default class ListViewExample extends PureComponent<{}, State> {
   componentDidMount() {
     SplashScreen.hide();
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
+    this.fetchData();
   }
   cartCounter() {
     console.log('cartCounter');
@@ -133,10 +134,7 @@ export default class ListViewExample extends PureComponent<{}, State> {
             if (responseData.success == 1) {
               AsyncStorage.setItem('token', JSON.stringify(responseData.data));
               AsyncStorage.setItem('user', JSON.stringify({ name: 'guest' }));
-              //this.cartCounter();
-              this.getSlider();
-              this.getCategory();
-              this.getProduct();
+             this.fetchData();
             }
           })
       }
