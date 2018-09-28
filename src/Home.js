@@ -16,6 +16,7 @@ import {
   Alert, BackAndroid, Dimensions,
   TouchableHighlight,
   StatusBar,
+  RefreshControl,
   ScrollView,ImageBackground
 } from 'react-native';
 var { height, width } = Dimensions.get('window');
@@ -38,10 +39,24 @@ export default class ListViewExample extends PureComponent<{}, State> {
       position: 1,
       height: 250,
       cartCount: 1,
+      refreshing: false,
       slideShow: <ActivityIndicator size="large" color="#51c0c3" />
     };
   }
 
+  _onRefresh = () => {
+    this.setState({refreshing: true});
+    console.log('Refreshing');
+    this.fetchData();
+  }
+
+  fetchData(){
+    this.cartCounter();
+    this.getSlider();
+    this.getCategory();
+    this.getProduct();
+    this.setState({refreshing: false});
+  }  
 
   handleBackButton = () => {
 
@@ -73,6 +88,7 @@ export default class ListViewExample extends PureComponent<{}, State> {
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
   }
   cartCounter() {
+    console.log('cartCounter');
     // cart counter get
     AsyncStorage.getItem('token').then((token) => {
       fetch(env.BASE_URL + "rest/cart/cart", {
@@ -98,14 +114,14 @@ export default class ListViewExample extends PureComponent<{}, State> {
   }
   componentWillMount() {
     BackHandler.addEventListener('hardwareBackPress', this.handleBackButton);
-    this.cartCounter();
+    /*this.cartCounter();
     this.getSlider();
     this.getCategory();
-    this.getProduct();
+    this.getProduct();*/
     AsyncStorage.getItem('token').then((token) => {
       console.log(token);
       if (!token || token == null) {
-        console.log('runing');
+        console.log('runing',env.BASE_URL + "feed/rest_api/gettoken&grant_type=client_credentials");
         fetch(env.BASE_URL + "feed/rest_api/gettoken&grant_type=client_credentials", {
           method: 'post',
           headers: {
@@ -113,9 +129,11 @@ export default class ListViewExample extends PureComponent<{}, State> {
           }
         }).then((response) => response.json())
           .then((responseData) => {
+            console.log(responseData.data);
             if (responseData.success == 1) {
               AsyncStorage.setItem('token', JSON.stringify(responseData.data));
               AsyncStorage.setItem('user', JSON.stringify({ name: 'guest' }));
+              //this.cartCounter();
               this.getSlider();
               this.getCategory();
               this.getProduct();
@@ -126,6 +144,7 @@ export default class ListViewExample extends PureComponent<{}, State> {
   }
 
   getProduct() {
+    console.log('getProduct');
     // get featured products
     AsyncStorage.getItem('token').then((token) => {
       this.setState({ progressVisible: true });
@@ -168,6 +187,7 @@ export default class ListViewExample extends PureComponent<{}, State> {
   }
 
   getCategory() {
+    console.log('getCategory');
     // get category
     AsyncStorage.getItem('token').then((token) => {
       fetch(env.BASE_URL + "feed/rest_api/categories", {
@@ -196,6 +216,7 @@ export default class ListViewExample extends PureComponent<{}, State> {
 
 
   getSlider() {
+    console.log('getSlider');
     // get slideshow
     AsyncStorage.getItem('token').then((token) => {
       fetch(env.BASE_URL + "feed/rest_api/slideshows", {
@@ -371,7 +392,12 @@ export default class ListViewExample extends PureComponent<{}, State> {
     const { navigate } = this.props.navigation;
 
     return (
-      <ScrollView>
+      <ScrollView refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this._onRefresh}
+          />
+        } >
         <View style={styles.container}>
           <StatusBar
             backgroundColor="#51c0c3"

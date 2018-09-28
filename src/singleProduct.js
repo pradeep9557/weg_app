@@ -7,7 +7,7 @@
 import React, { Component } from 'react';
 import {
     Text, Dimensions,
-    View, StatusBar, StyleSheet,Alert, TextInput, ScrollView, WebView, TouchableHighlight, Image,TouchableOpacity,
+    View, StatusBar, StyleSheet,Alert, RefreshControl,TextInput, ScrollView, WebView, TouchableHighlight, Image,TouchableOpacity,
     AsyncStorage, ToastAndroid
 } from 'react-native';
 var { height, width } = Dimensions.get('window');
@@ -28,6 +28,7 @@ class Page1 extends Component {
         this.state = {
             position: 1,
             height: 250,
+            refreshing: false,
             dialogVisible: false,
             progressVisible: false,
             related:'',
@@ -39,6 +40,18 @@ class Page1 extends Component {
     componentDidMount() {
         this.cartCounter();
     }
+    _onRefresh = () => {
+        this.setState({refreshing: true});
+        console.log('Refreshing');
+        this.fetchData();
+      }
+
+      fetchData(){
+        this.cartCounter();
+        this.getReleated();
+        this.setState({refreshing: false});
+      }  
+
     componentWillMount() {
         this.getReleated();
         const { params } = this.props.navigation.state;
@@ -313,7 +326,12 @@ class Page1 extends Component {
                     visible={this.state.progressVisible}
                     message="Please, wait..."
                 />
-                <ScrollView>
+                <ScrollView refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this._onRefresh}
+          />
+        } >
                     {this.state.products}
                     
                     {this.state.related.length>0 ? <View>

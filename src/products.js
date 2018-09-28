@@ -1,7 +1,7 @@
 /* @flow */
 
 import React, { PureComponent } from 'react';
-import { ListView, View, Text,YellowBox, StyleSheet, Image,ToastAndroid, AsyncStorage,TouchableOpacity, TouchableHighlight, StatusBar, ScrollView } from 'react-native';
+import { ListView, View, Text,YellowBox, RefreshControl,StyleSheet, Image,ToastAndroid, AsyncStorage,TouchableOpacity, TouchableHighlight, StatusBar, ScrollView } from 'react-native';
 
 var SplashScreen = require('@remobile/react-native-splashscreen');
 import ImageSlider from 'react-native-image-slider';
@@ -15,9 +15,22 @@ export default class ListViewExample extends PureComponent<{}, State> {
     super(props);
     this.state = {
       position: 1,
+      refreshing: false,
       height:250,
     };
   }
+
+  _onRefresh = () => {
+    this.setState({refreshing: true});
+    console.log('Refreshing');
+    this.fetchData();
+  }
+
+  fetchData(){
+    this.cartCounter();
+    this.setState({refreshing: false});
+  }  
+  
   componentDidMount() {
     SplashScreen.hide();
   }
@@ -125,7 +138,12 @@ addCart(product) {
      const { navigate } = this.props.navigation;
 
     return (
-      <ScrollView>
+      <ScrollView refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this._onRefresh}
+          />
+        } >
       <View style={styles.container}>
          <StatusBar
             backgroundColor="#51c0c3"

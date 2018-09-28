@@ -9,7 +9,7 @@ import {
   Text,
   StyleSheet, AsyncStorage, Image, Alert, Dimensions, TextInput,
   ScrollView, ActivityIndicator, ImageBackground, ToastAndroid,
-  View, StatusBar, TouchableHighlight
+  View, StatusBar, TouchableHighlight,RefreshControl
 } from 'react-native';
 import env from './components/env';
 import { ListItem, SearchBar, Header, CheckBox, Button, FormLabel, FormInput, FormValidationMessage, Divider } from 'react-native-elements';
@@ -24,6 +24,7 @@ class Page1 extends Component {
     this.state = {
       progressVisible:false,
       allowCouponApply:true,
+      refreshing: false,
       products: <ActivityIndicator size="large" color="#51c0c3" />
     };
   }
@@ -34,6 +35,17 @@ class Page1 extends Component {
       backgroundColor: '#51c0c3'
     }
   });
+
+  _onRefresh = () => {
+    this.setState({refreshing: true});
+    console.log('Refreshing');
+    this.fetchData();
+  }
+
+  fetchData(){
+    this.getProducts();
+    this.setState({refreshing: false});
+  }  
 
   increase(data) {
     this.setState({progressVisible:true});
@@ -255,7 +267,12 @@ class Page1 extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <ScrollView>
+        <ScrollView refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this._onRefresh}
+          />
+        } >
           <StatusBar
             backgroundColor="#51c0c3"
             barStyle="light-content"

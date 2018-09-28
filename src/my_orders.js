@@ -9,7 +9,7 @@ import {
   Text,
   StyleSheet, AsyncStorage,Image,Alert,Dimensions,
   ScrollView, ActivityIndicator,ImageBackground,ToastAndroid,
-  View, StatusBar, TouchableHighlight,FlatList
+  View, StatusBar, RefreshControl,TouchableHighlight,FlatList
 } from 'react-native';
 import env from './components/env';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
@@ -20,9 +20,27 @@ class Page1 extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      refreshing: false,
       data:''
     };
   }
+
+  _onRefresh = () => {
+    this.setState({refreshing: true});
+    console.log('Refreshing');
+    this.fetchData();
+  }
+
+  fetchData(){
+    AsyncStorage.getItem('user_detail').then((data) => {
+
+      id=JSON.parse(data).customer_id;
+      console.log(id)
+      this.getMyorders(id);
+    }).catch((error)=>console.log(error)); 
+    this.setState({refreshing: false});
+  }  
+
   static navigationOptions = ({ navigation }) => ({
     title: 'My Orders',
     headerTintColor: 'white',

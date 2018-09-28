@@ -1,7 +1,7 @@
 /* @flow */
 
 import React, { PureComponent } from 'react';
-import { ListView, View, Text,TextInput, Alert, StyleSheet, Image, ToastAndroid, AsyncStorage,TouchableOpacity, TouchableHighlight, StatusBar, ScrollView } from 'react-native';
+import { ListView, View, Text,TextInput, RefreshControl,Alert, StyleSheet, Image, ToastAndroid, AsyncStorage,TouchableOpacity, TouchableHighlight, StatusBar, ScrollView } from 'react-native';
 
 var SplashScreen = require('@remobile/react-native-splashscreen');
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -21,10 +21,22 @@ export default class ListViewExample extends PureComponent<{}, State> {
     super(props);
     this.state = {
       views: null,
+      refreshing: false,
       changePassword:false
     };
   }
 
+  _onRefresh = () => {
+    this.setState({refreshing: true});
+    console.log('Refreshing');
+    this.fetchData();
+  }
+
+  fetchData(){
+    this.userAccess();
+    this.setState({refreshing: false});
+  }  
+  
   componentWillMount() {
     this.userAccess();
   }

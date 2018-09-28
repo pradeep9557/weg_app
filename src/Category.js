@@ -1,7 +1,7 @@
 /* @flow */
 
 import React, { PureComponent } from 'react';
-import { ListView, View, Text, ActivityIndicator, ImageBackground,BackHandler,TouchableOpacity, StyleSheet, Image, ToastAndroid, AsyncStorage, TouchableHighlight, StatusBar, ScrollView } from 'react-native';
+import { ListView, View, Text, ActivityIndicator, ImageBackground,BackHandler,TouchableOpacity, RefreshControl,StyleSheet, Image, ToastAndroid, AsyncStorage, TouchableHighlight, StatusBar, ScrollView } from 'react-native';
 
 var SplashScreen = require('@remobile/react-native-splashscreen');
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -13,12 +13,58 @@ export default class ListViewExample extends PureComponent<{}, State> {
   constructor(props) {
     super(props);
     this.state = {
+      refreshing: false,
       category: <ActivityIndicator size="large" color="#51c0c3" />
     }
   }
   componentDidMount() {
     SplashScreen.hide();
   }
+
+  _onRefresh = () => {
+    this.setState({refreshing: true});
+    console.log('Refreshing');
+    this.fetchData();
+  }
+
+  fetchData(){
+    this.cartCounter();
+    // get category
+    AsyncStorage.getItem('token').then((token) => {
+      fetch(env.BASE_URL + "feed/rest_api/categories", {
+        method: 'GET',
+        headers: {
+          Authorization: 'Bearer ' + JSON.parse(token).access_token
+        }
+      }).then((response) => response.json())
+        .then((responseData) => {
+          console.log(responseData);
+          if (responseData.success == 1) {
+            var resp = responseData.data.map((data) => {
+              data.name = "<p style='color:white;'>"+data.name+"</p>";
+              console.log(data.name);
+              return <TouchableHighlight onPress={() => this.props.navigation.navigate('SubCategory', {data:data})} key={data.category_id}>
+                <View style={styles.card}>
+                  <ImageBackground source={{ uri: data.original_image }} style={styles.backgroundImage}>
+
+                    <View style={styles.card_footer}>
+                      <HTMLView
+                        value={data.name}
+                        stylesheet={styles}
+                        style={{ padding: 10, margin: 0}}
+                      />
+                      {/* <Text style={styles.category_title}></Text> */}
+                    </View>
+                  </ImageBackground>
+                </View>
+              </TouchableHighlight>;
+            });
+            this.setState({ category: resp });
+          }
+        });
+    });
+    this.setState({refreshing: false});
+  }  
 
   cartCounter(){
     // cart counter get
@@ -129,7 +175,12 @@ export default class ListViewExample extends PureComponent<{}, State> {
           backgroundColor="#51c0c3"
           barStyle="light-content"
         />
-        <ScrollView>
+        <ScrollView refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this._onRefresh}
+          />
+        } >
           <View>
             {this.state.category}
           </View>

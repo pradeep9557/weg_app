@@ -32,7 +32,8 @@ class Page3 extends Component {
 
     render() {
         const { params } = this.props.navigation.state;
-alert(JSON.stringify(params));
+        console.log(params);
+        console.log(params.data);
         return (
             <View style={styles.container}>
                 <StatusBar

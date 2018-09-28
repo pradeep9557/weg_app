@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {
   Text, ScrollView,ToastAndroid,
-  View, StatusBar, StyleSheet, AsyncStorage, TouchableHighlight,TouchableOpacity
+  View, StatusBar, StyleSheet, AsyncStorage, TouchableHighlight,TouchableOpacity,RefreshControl,
 } from 'react-native';
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import { CheckBox } from 'react-native-elements';
@@ -13,9 +13,22 @@ class Page3 extends Component {
     super(props);
     this.state = {
       address: null,
+      refreshing: false,
       checked: true,
     }
   }
+
+   _onRefresh = () => {
+    this.setState({refreshing: true});
+    console.log('Refreshing');
+    this.fetchData();
+  }
+
+  fetchData(){
+    this.getAddress();
+    this.setState({refreshing: false});
+  }   
+
   static navigationOptions =({navigation}) => ({
     title: 'Checkout',
     headerTintColor: 'white',
@@ -95,7 +108,12 @@ class Page3 extends Component {
 
   render() {
     return (
-      <ScrollView>
+      <ScrollView refreshControl={
+          <RefreshControl
+            refreshing={this.state.refreshing}
+            onRefresh={this._onRefresh}
+          />
+        } >
         <View style={styles.container}>
           <StatusBar
             backgroundColor="#51c0c3"

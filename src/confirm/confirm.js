@@ -30,16 +30,22 @@ class Page3 extends Component {
             console.log('g2apay entered');
             console.log(responseData.data.payment);
             AsyncStorage.getItem('token').then((token) => {
-                fetch(env.BASE_URL + "rest/simple_confirm/checkoutforapp", {
+                // fetch(env.BASE_URL + "rest/simple_confirm/checkoutforapp", {
+                fetch(env.BASE_URL + "extension/payment/g2apay/checkout", {
                     method: 'POST',
                     headers: {
                         Authorization: 'Bearer ' + JSON.parse(token).access_token,
+                        Accept  : 'application/json',
+                        'Content-Type' : 'application/json'
                     },
-                }).then((responseData1) =>{
-                    console.log(responseData1);
+                    body:JSON.stringify(responseData)
+                }).then((response) => response.json())
+                    .then((resData1) => {
+                    console.log(resData1);
+                    this.props.navigation.navigate('confirmWeb', {data:resData1});
                 });
             });
-            // this.props.navigation.navigate('confirmWeb', {data:responseData.data.payment});
+             // this.props.navigation.navigate('confirmWeb', {data:responseData.data.payment});
 
         }else{
             this.setState({progressVisible:true});

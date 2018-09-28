@@ -10,7 +10,7 @@ import FontAwesome, { Icons } from 'react-native-fontawesome';
 import env from './components/env';
 import { ProgressDialog,Dialog } from 'react-native-simple-dialogs';
 
-import { GoogleSignin, GoogleSigninButton } from 'react-native-google-signin';
+import { GoogleSignin, GoogleSigninButton, statusCodes } from 'react-native-google-signin';
 
 
 export default class ListViewExample extends PureComponent<{}, State> {
@@ -19,7 +19,7 @@ export default class ListViewExample extends PureComponent<{}, State> {
     this.state = {
       loading:false,
       progressVisible:false,
-      ForgotPassword:false
+      ForgotPassword:false 
     }
   }
 
@@ -37,24 +37,23 @@ export default class ListViewExample extends PureComponent<{}, State> {
     this.setState({checked: !this.state.checked});
   }
 
-  googleAuth() {
-    console.log(GoogleSignin);    
-    GoogleSignin.configure({webClientId:'843815696877-8in37ptn29n4cps8nffeht8kah3ebor7.apps.googleusercontent.com'}).then(()=>{
-   
-    GoogleSignin.signIn()
-      .then((user) => {
-        alert(JSON.stringify(user));
-        console.log('google',user);
-        let params = {email: user.email, image: user.photo, name: user.givenName,role:'user',status:'activated',provider:'google'}
-        console.log("this.props", this.props);
+  componentDidMount() {
+    GoogleSignin.configure({
+      webClientId:'70631952474-feshf136lhvg1qlvqfvu0icss9kch0s1.apps.googleusercontent.com'
+    });
+  }
 
-      })
-      .catch((err) => {
-        console.log('WRONG SIGNIN', err);
-        alert("canceled by user");
-      })
-      .done();
-    }).catch(googleError=>console.log(googleError));
+  googleAuth() {
+    
+    GoogleSignin.signIn().then((user) => { alert(JSON.stringify(user));
+    console.log('google',user); let params = {email: user.email, image:
+    user.photo, name:
+    user.givenName,role:'user',status:'activated',provider:'google'}
+    console.log("this.props", this.props);
+
+      }).catch((err) => {
+        console.log(err);
+      }).done();
   }
 
   render() {
