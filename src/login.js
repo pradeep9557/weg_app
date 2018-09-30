@@ -12,6 +12,7 @@ import { ProgressDialog,Dialog } from 'react-native-simple-dialogs';
 import { GoogleSignin, GoogleSigninButton, statusCodes } from 'react-native-google-signin';
 // var { FBLogin, FBLoginManager } = require('react-native-facebook-login');
 import { LoginManager, AccessToken } from 'react-native-fbsdk';
+import { SocialIcon } from 'react-native-elements'
 
 export default class ListViewExample extends PureComponent<{}, State> {
   constructor(props){
@@ -187,9 +188,11 @@ export default class ListViewExample extends PureComponent<{}, State> {
         </Dialog>
         <View style={{marginTop:30,alignItems:'center'}}>
         <TouchableOpacity onPress={ ()=>this._fbAuth()}>
-            <Text style={{paddingLeft:20,padding:5,fontFamily:'WhitneyMedium',fontSize:18}}>
-              <FontAwesome>{Icons.facebook} Login With Facebook</FontAwesome>
-            </Text>
+            <SocialIcon
+              title='Sign In With Facebook'
+              button
+              type='facebook'
+            />
         </TouchableOpacity>
           <TouchableOpacity onPress={()=>this.setState({ ForgotPassword: true })}>
             <Text style={{fontWeight:'bold',padding:5}}>Forgot Password <Text style={{color:'#51c0c3'}}>Click here</Text></Text>
