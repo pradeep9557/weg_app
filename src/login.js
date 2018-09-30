@@ -252,6 +252,7 @@ export default class ListViewExample extends PureComponent<{}, State> {
         }).then((response) => response.json())
         .then((responseData) => {
           console.log(response);
+          console.log(responseData);
           this.setState({progressVisible:false});
           console.log(responseData);
           if(responseData.result == 'success')

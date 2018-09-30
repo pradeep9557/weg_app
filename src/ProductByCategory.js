@@ -2,7 +2,7 @@
 
 import React, { PureComponent } from 'react';
 import { ListView, View, Text, YellowBox, Modal, Dimensions, StyleSheet, Alert, ActivityIndicator, Image,
-     ToastAndroid, AsyncStorage, TouchableOpacity, TouchableHighlight, StatusBar, ScrollView } from 'react-native';
+     ToastAndroid, AsyncStorage, TouchableOpacity, TouchableHighlight, Picker,StatusBar, ScrollView } from 'react-native';
 
 var SplashScreen = require('@remobile/react-native-splashscreen');
 import ImageSlider from 'react-native-image-slider';
@@ -25,7 +25,6 @@ const renderLabel = (label, style) => {
         </View>
     )
 }
-YellowBox.ignoreWarnings(['Warning: isMounted(...) is deprecated', 'Module RCTImageLoader']);
 export default class ListViewExample extends PureComponent<{}, State> {
     constructor(props) {
         super(props);
@@ -39,6 +38,9 @@ export default class ListViewExample extends PureComponent<{}, State> {
             selectedFruits: [],
             progressVisible: false,
             modalVisible: false,
+            modalVisibleSort: false,
+            language1: '',
+            language2: '',
         };
     }
 
@@ -111,8 +113,64 @@ export default class ListViewExample extends PureComponent<{}, State> {
                 }
             }).then((response) => response.json())
                 .then((responseData) => {
+                    console.log("feed/rest_api/products&category=" + this.props.navigation.state.params.data.category_id + "&filters=" + str);
                     this.setState({ loading: <Text></Text> });
-                    this.setModalVisible(!this.state.modalVisible);
+                    this.setModalVisible(false);
+                    this.setState({ progressVisible: false });
+                    responseData.data.map((product) => {
+                        global.products.push(product);
+                    });
+                    var data = global.products.map((data) => {
+                        if (data.special_formated != 0) {
+                            var price = <View style={{ flexDirection: 'row' }}><Text style={{ fontWeight: 'bold', color: '#51c0c3' }}>{data.special_formated}</Text></View>
+                        } else {
+                            var price = <Text style={{ fontWeight: 'bold', color: '#51c0c3' }}>{data.price_formated}</Text>
+                        }
+                        return <View style={styles.box} key={data.product_id}>
+                            <TouchableHighlight onPress={() => this.props.navigation.navigate('SingleProduct', { id: data.product_id })}><Image style={styles.image} source={{ uri: data.image }} /></TouchableHighlight>
+                            <View style={styles.productTitle}>
+                                <Text style={styles.productHeading}>{data.name}</Text>
+                                <View style={styles.footer}>
+                                    <View style={styles.price}>{price}</View>
+                                    <View style={styles.cart}>
+                                        <TouchableHighlight onPress={() => this.addWishlist(data.product_id)} underlayColor={'#fff'} style={{ marginRight: 10, }}><Text style={{ fontSize: 20, padding: 5 }}><FontAwesome>{Icons.heart}</FontAwesome></Text></TouchableHighlight>
+                                        <TouchableHighlight onPress={() => this.addCart(data.product_id)} underlayColor={'#fff'}><Text style={{ fontSize: 20, padding: 5 }}><FontAwesome>{Icons.shoppingCart}</FontAwesome></Text></TouchableHighlight>
+                                    </View>
+                                </View>
+                            </View>
+                        </View>;
+                    })
+                    this.setState({ products: data });
+                })
+        })
+    }
+
+    sortApply(itemValue) {
+        console.log(this.state.selectedFruits);
+        var str = '';
+        for (var f = 0; f < this.state.selectedFruits.length; f++) {
+            if (this.state.selectedFruits.length == (f + 1)) {
+                str += this.state.selectedFruits[f].value;
+            } else {
+                str += this.state.selectedFruits[f].value + ',';
+            }
+        }
+        str += "&sort=priceorder&sortorder="+itemValue;
+
+        this.setState({ filter: str });
+        this.setState({ progressVisible: true });
+        global.products = [];
+        AsyncStorage.getItem('token').then((token) => {
+            fetch(env.BASE_URL + "feed/rest_api/products&category=" + this.props.navigation.state.params.data.category_id + "&filters=" + str, {
+                method: 'GET',
+                headers: {
+                    Authorization: 'Bearer ' + JSON.parse(token).access_token
+                }
+            }).then((response) => response.json())
+                .then((responseData) => {
+                    console.log("feed/rest_api/products&category=" + this.props.navigation.state.params.data.category_id + "&filters=" + str);
+                    this.setState({ loading: <Text></Text> });
+                    this.setModalVisible(false);
                     this.setState({ progressVisible: false });
                     responseData.data.map((product) => {
                         global.products.push(product);
@@ -149,7 +207,8 @@ export default class ListViewExample extends PureComponent<{}, State> {
             if (params.data.filters.filter_groups.length > 0) {
                 this.setState({
                     filterBtn: <View style={{ flex: 1, flexDirection: 'row', borderBottomColor: '#ccc', borderBottomWidth: 1, backgroundColor: 'white', alignItems: 'stretch' }}>
-                        <TouchableHighlight onPress={() => { this.setModalVisible(true); }} style={{ flex: 1, padding: 15, alignItems: 'center' }}><Text style={{ fontSize: 16 }}><FontAwesome>{Icons.filter}</FontAwesome> Filter</Text></TouchableHighlight>
+                        <TouchableHighlight onPress={() => { this.setModalVisible(true); }} style={{ flex: 1, padding: 15, alignItems: 'flex-end' }}><Text style={{ fontSize: 16 }}><FontAwesome>{Icons.filter}</FontAwesome> Filter</Text></TouchableHighlight>
+                        <TouchableHighlight onPress={() => { this.setModalVisibleSort(true); }} style={{ flex: 1, padding: 15, alignItems: 'flex-start' }}><Text style={{ fontSize: 16 }}><FontAwesome>{Icons.filter}</FontAwesome> Sort</Text></TouchableHighlight>
                     </View>
                 });
             }
@@ -327,6 +386,15 @@ export default class ListViewExample extends PureComponent<{}, State> {
     setModalVisible(visible) {
         this.setState({ modalVisible: visible });
     }
+    setModalVisibleSort(visible){
+        this.setState({ modalVisibleSort: visible });
+    }
+    onPickerSelection(itemValue){
+        console.log(itemValue);
+       this.setState({ language1: itemValue });
+       this.sortApply(itemValue);
+       this.setModalVisibleSort(false);
+    }
     onSelectionsChange = (selectedFruits) => {
         // selectedFruits is array of { label, value }
         this.setState({ selectedFruits })
@@ -370,7 +438,7 @@ export default class ListViewExample extends PureComponent<{}, State> {
                         }}>
                         <View style={{ marginTop: 0, flex: 1, borderTopColor: '#f5f5f5', borderTopWidth: 1, backgroundColor: 'rgba(255,255,255,0.5)' }}>
                             <View style={styles.header}>
-                                <Text style={{ fontSize: 16, textAlign: 'center' }}><FontAwesome>{Icons.filter}</FontAwesome> Filter</Text>
+                                <Text style={{ fontSize: 16, textAlign: 'right' }}><FontAwesome>{Icons.filter}</FontAwesome> Filter</Text>
                             </View>
                             <ScrollView>
                                 {params.data.filters.filter_groups.map(data => <View key={data.filter_group_id} style={{ backgroundColor: 'white', marginBottom: 5 }}>
@@ -388,6 +456,25 @@ export default class ListViewExample extends PureComponent<{}, State> {
                                 <TouchableHighlight style={[styles.footerBtn, { backgroundColor: '#51c0c3' }]} onPress={() => this.filterApply()}>
                                     <Text style={[styles.footerBtnTxt, { color: 'white' }]}>Apply</Text>
                                 </TouchableHighlight>
+                            </View>
+                        </View>
+                    </Modal>
+                    <Modal
+                        animationType="slide"
+                        visible={this.state.modalVisibleSort}
+                        onRequestClose={() => {
+                            this.setModalVisibleSort(!this.state.modalVisibleSort);
+                        }}>
+                        <View style={{ marginTop: 0, flex: 1, borderTopColor: '#f5f5f5', borderTopWidth: 1, backgroundColor: 'rgba(255,255,255,0.5)' }}>
+                            <View style={styles.header}>
+                                <Text style={{ fontSize: 16, textAlign: 'right' }}><FontAwesome>{Icons.filter}</FontAwesome> Sort</Text>
+                                <Picker
+                                  selectedValue={this.state.language1}
+                                  style={{ height: 50, width: 100 }}
+                                  onValueChange={(itemValue, itemIndex) => this.onPickerSelection(itemValue)}>
+                                  <Picker.Item label="Price Low to High" value="ASC" />
+                                  <Picker.Item label="Price High to Low" value="DESC" />
+                                </Picker>
                             </View>
                         </View>
                     </Modal>
