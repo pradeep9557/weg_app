@@ -3,9 +3,10 @@ package com.weguarentee;
 import android.app.Application;
 
 import com.facebook.react.ReactApplication;
+//import com.paymentgateway.MidtransPackage;
 import com.facebook.reactnative.androidsdk.FBSDKPackage;
 //import com.reactnativenavigation.NavigationReactPackage;
-import co.apptailor.googlesignin.RNGoogleSigninPackage;
+//import co.apptailor.googlesignin.RNGoogleSigninPackage;
 import com.oblador.vectoricons.VectorIconsPackage;
 import com.remobile.splashscreen.RCTSplashScreenPackage;
 import com.facebook.react.ReactNativeHost;
@@ -41,9 +42,10 @@ public class MainApplication extends Application implements ReactApplication {
       return Arrays.<ReactPackage>asList(
           new RCTSplashScreenPackage(MainActivity.activity, true),
           new MainReactPackage(),
+            //new MidtransPackage(),
             new FBSDKPackage(mCallbackManager),
             //new NavigationReactPackage(),
-            new RNGoogleSigninPackage(),
+            //new RNGoogleSigninPackage(),
           new FIRMessagingPackage(),
           new VectorIconsPackage()
       );

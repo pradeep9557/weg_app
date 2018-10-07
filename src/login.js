@@ -9,7 +9,7 @@ import { ListItem, SearchBar, Header,CheckBox, Button, FormLabel, FormInput, For
 import FontAwesome, { Icons } from 'react-native-fontawesome';
 import env from './components/env';
 import { ProgressDialog,Dialog } from 'react-native-simple-dialogs';
-import { GoogleSignin, GoogleSigninButton, statusCodes } from 'react-native-google-signin';
+//import { GoogleSignin, GoogleSigninButton, statusCodes } from 'react-native-google-signin';
 // var { FBLogin, FBLoginManager } = require('react-native-facebook-login');
 import { LoginManager, AccessToken } from 'react-native-fbsdk';
 import { SocialIcon } from 'react-native-elements'
@@ -39,9 +39,9 @@ export default class ListViewExample extends PureComponent<{}, State> {
   }
 
   componentDidMount() {
-    GoogleSignin.configure({
+    /*GoogleSignin.configure({
       webClientId:'70631952474-feshf136lhvg1qlvqfvu0icss9kch0s1.apps.googleusercontent.com'
-    });
+    });*/
   }
 
    _fbAuth(){    
@@ -123,7 +123,7 @@ export default class ListViewExample extends PureComponent<{}, State> {
 
   googleAuth() {
     
-    GoogleSignin.signIn().then((user) => { alert(JSON.stringify(user));
+    /*GoogleSignin.signIn().then((user) => { alert(JSON.stringify(user));
     console.log('google',user); let params = {email: user.email, image:
     user.photo, name:
     user.givenName,role:'user',status:'activated',provider:'google'}
@@ -131,7 +131,7 @@ export default class ListViewExample extends PureComponent<{}, State> {
 
       }).catch((err) => {
         console.log(err);
-      }).done();
+      }).done();*/
   }
 
   render() {

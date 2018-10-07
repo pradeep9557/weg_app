@@ -25,6 +25,7 @@ import Login from './login';
 import Confirm from './confirmShopping';
 import Shipping from './shippingAddress';
 import AddAddress from './confirm/address';
+import EditAddress from './confirm/editaddress';
 import Payment from './confirm/payment';
 import confirmWeb from './confirm/Webview';
 import ConfirmPayment from './confirm/confirm';
@@ -85,6 +86,7 @@ const tabs = TabNavigator({
     Wishlist: { screen: Wishlist },
     Signup: { screen: Signup },
     Login: { screen: Login },
+    EditAddress: { screen: EditAddress },
     AddAddress: { screen: AddAddress },
     Payment:{screen:Payment},
     ConfirmPayment:{screen:ConfirmPayment},

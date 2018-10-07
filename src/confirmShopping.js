@@ -64,6 +64,7 @@ class Page3 extends Component {
                   <Text style={styles.text}>{data.firstname} {data.lastname}</Text>
                   <Text style={styles.text}>{data.address_1}, {data.city}, {data.zone}, {data.postcode}</Text>
                 </View>
+                <TouchableHighlight onPress={() => this.props.navigation.navigate('EditAddress',responseData.data.addresses[index])} style={{ padding: 10 }}><Text><FontAwesome>{Icons.edit}</FontAwesome> Edit</Text></TouchableHighlight>
               </RadioButton>
             });
             this.setState({
