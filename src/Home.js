@@ -197,10 +197,11 @@ export default class ListViewExample extends PureComponent<{}, State> {
         .then((responseData) => {
           console.log(responseData);
           var data = responseData.data.map(data => {
+            console.log(data);
             var title = data.name.replace(/(<([^>]+)>)/ig, '');
             return <View style={styles.tabItem} key={data.category_id}>
               <TouchableHighlight onPress={() => this.props.navigation.navigate('SubCategory', {data:data})} key={data.category_id} underlayColor={'#fff'}>
-                <Image source={require('./images/shirt.png')} style={{ width: 30, height: 30 }} />
+                <Image source={this.fileName(data.seo_url)} style={{ width: 30, height: 30 }} />
               </TouchableHighlight>
               <Text style={styles.tabTitle}>{title.replace('&amp;', '&')}</Text>
             </View>
@@ -211,7 +212,18 @@ export default class ListViewExample extends PureComponent<{}, State> {
     // get category end
   }
 
+fileName(name){
+    console.log(name);
+    switch (name) {
+      case 'kitchen_essentials': return require('./images/kitchen_essentials.png');
+      case 'health_wellness': return require('./images/health_wellness.png');
+      case 'beauty_skincare': return require('./images/beauty_skincare.png');
+      case 'homecare_decor': return require('./images/homecare_decor.png');
+      case 'combos_hampers': return require('./images/combos_hampers.png');
+      // etc...
+    }
 
+  }
 
   getSlider() {
     console.log('getSlider');
