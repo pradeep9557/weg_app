@@ -197,7 +197,6 @@ export default class ListViewExample extends PureComponent<{}, State> {
         .then((responseData) => {
           console.log(responseData);
           var data = responseData.data.map(data => {
-            console.log(data);
             var title = data.name.replace(/(<([^>]+)>)/ig, '');
             return <View style={styles.tabItem} key={data.category_id}>
               <TouchableHighlight onPress={() => this.props.navigation.navigate('SubCategory', {data:data})} key={data.category_id} underlayColor={'#fff'}>
@@ -213,7 +212,6 @@ export default class ListViewExample extends PureComponent<{}, State> {
   }
 
 fileName(name){
-    console.log(name);
     switch (name) {
       case 'kitchen_essentials': return require('./images/kitchen_essentials.png');
       case 'health_wellness': return require('./images/health_wellness.png');
