@@ -247,31 +247,21 @@ export default class ListViewExample extends PureComponent<{}, State> {
       AsyncStorage.getItem('token').then((token) => {
         console.log(token);
         console.log(JSON.stringify(this.state));
-        console.log(env.BASE_URL+"account/fpassword");
-        fetch(env.BASE_URL+"rest/account/fpassword", {
+        console.log(env.BASE_URL+"rest/login/forgotpassword");
+        fetch(env.BASE_URL+"rest/login/forgotpassword", {
           method:'POST',
           headers:{
             Authorization: 'Bearer ' + JSON.parse(token).access_token,
             Accept  : 'application/json',
             'Content-Type' : 'application/json'
           },
-          body:JSON.stringify({email:this.state.email})
-        }).then((response) => response.json())
-        .then((responseData) => {
-          console.log(response);
-          console.log(responseData);
-          this.setState({progressVisible:false});
-          console.log(responseData);
-          if(responseData.result == 'success')
-          { 
-            this.setState({ ForgotPassword: false });
-            ToastAndroid.show(responseData.msg, ToastAndroid.SHORT);
-          }else{
-            ToastAndroid.show(responseData.error[0], ToastAndroid.SHORT);
-          }
-          
-        })
-      })
+          body:JSON.stringify({email:this.state.email,forgot:true})
+        }).then(response => { return response.json();})
+          .then(responseData => {console.log(responseData); return responseData;})
+          .then(data => {
+            console.log(data);
+          })
+          }).catch(e=>console.log(e));
   }
 }
 
