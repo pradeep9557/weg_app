@@ -48,7 +48,7 @@ export default class ListViewExample extends PureComponent<{}, State> {
         LoginManager.logInWithReadPermissions(['public_profile','email']).then((result)=>{
           if(result.isCancelled){
             console.log('Login was Cancelled');
-            alert("canceled by user");
+            ToastAndroid.show("canceled by user", ToastAndroid.SHORT);
           }
           else{ 
             AccessToken.getCurrentAccessToken().then((data) => {
