@@ -259,7 +259,8 @@ export default class ListViewExample extends PureComponent<{}, State> {
         }).then(response => { return response.json();})
           .then(responseData => {console.log(responseData); return responseData;})
           .then(data => {
-            console.log(data);
+            this.setState({ ForgotPassword: false });
+            ToastAndroid.show(data.data.msg, ToastAndroid.LONG);
           })
           }).catch(e=>console.log(e));
   }
