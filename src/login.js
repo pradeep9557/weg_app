@@ -186,18 +186,20 @@ export default class ListViewExample extends PureComponent<{}, State> {
             </View>
           </View>
         </Dialog>
-        <View style={{marginTop:30,alignItems:'center'}}>
+        <View style={styles.row}>
         <TouchableOpacity onPress={ ()=>this._fbAuth()}>
             <SocialIcon
               title='Sign In With Facebook'
               button
               type='facebook'
+              style={styles.buttonText}
             />
         </TouchableOpacity>
+        </View>
+        <View style={{marginTop:30,alignItems:'center'}}>
           <TouchableOpacity onPress={()=>this.setState({ ForgotPassword: true })}>
             <Text style={{fontWeight:'bold',padding:5}}>Forgot Password <Text style={{color:'#51c0c3'}}>Click here</Text></Text>
           </TouchableOpacity>
-
         </View>
         </ScrollView>
       </View>
@@ -322,4 +324,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  social: {
+    fontWeight: 'bold',
+    textAlign: 'center',
+    fontSize: 16,
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+  }
 });
