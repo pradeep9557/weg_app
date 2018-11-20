@@ -250,7 +250,7 @@ class Page1 extends Component {
                 this.setState({progressVisible:false});
                 console.log(responseData);
               } else {
-                this.setState({progressVisible:false,allowCouponApply:false});
+                this.setState({progressVisible:false});
                 ToastAndroid.show(responseData.error[0], ToastAndroid.SHORT);
                 this.getProducts();
                // alert(this.state.allowCouponApply)

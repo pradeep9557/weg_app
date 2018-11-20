@@ -470,7 +470,7 @@ export default class ListViewExample extends PureComponent<{}, State> {
                                 <Text style={{ fontSize: 16, textAlign: 'right' }}><FontAwesome>{Icons.filter}</FontAwesome> Sort</Text>
                                 <Picker
                                   selectedValue={this.state.language1}
-                                  style={{ height: 50, width: 100 }}
+                                  style={{ height: 100, width: 160 }}
                                   onValueChange={(itemValue, itemIndex) => this.onPickerSelection(itemValue)}>
                                   <Picker.Item label="Price Low to High" value="ASC" />
                                   <Picker.Item label="Price High to Low" value="DESC" />

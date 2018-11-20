@@ -28,7 +28,8 @@ class Page3 extends Component {
     send1(responseData){
         if(this.props.navigation.state.params.code=='g2apay'){
             console.log('g2apay entered');
-            console.log(responseData.data.payment);
+            ToastAndroid.show('Currently This facility is disabled. please use another payment method', ToastAndroid.LONG);
+            /*console.log(responseData.data.payment);
             AsyncStorage.getItem('token').then((token) => {
                 // fetch(env.BASE_URL + "rest/simple_confirm/checkoutforapp", {
                 fetch(env.BASE_URL + "extension/payment/g2apay/checkout", {
@@ -44,7 +45,7 @@ class Page3 extends Component {
                     console.log(resData1);
                     this.props.navigation.navigate('confirmWeb', {data:resData1});
                 });
-            });
+            });*/
              // this.props.navigation.navigate('confirmWeb', {data:responseData.data.payment});
 
         }else{

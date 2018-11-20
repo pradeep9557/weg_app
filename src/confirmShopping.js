@@ -60,11 +60,12 @@ class Page3 extends Component {
               //   <Text style={styles.text}>21-M-G-Satyam Nagar, Sri Ganganagar, Rajasthan, 335001</Text>
               // </View>;
               return <RadioButton value={data.address_id} style={styles.AddBox} key={data.address_id}>
-                <View key={data.address_id}>
+                <View key={data.address_id} style={{ flexDirection: 'row', borderBottomColor: '#ccc', borderBottomWidth: 1, justifyContent: 'space-between' }}>
                   <Text style={styles.text}>{data.firstname} {data.lastname}</Text>
                   <Text style={styles.text}>{data.address_1}, {data.city}, {data.zone}, {data.postcode}</Text>
+                  <TouchableHighlight onPress={() => this.props.navigation.navigate('EditAddress',responseData.data.addresses[index])} style={{ paddingLeft: 5 }}><Text><FontAwesome>{Icons.edit}</FontAwesome> Edit</Text></TouchableHighlight>
                 </View>
-                <TouchableHighlight onPress={() => this.props.navigation.navigate('EditAddress',responseData.data.addresses[index])} style={{ padding: 10 }}><Text><FontAwesome>{Icons.edit}</FontAwesome> Edit</Text></TouchableHighlight>
+                
               </RadioButton>
             });
             this.setState({
